@@ -134,7 +134,7 @@ int main()
              err_mess(exit_send);
              close(socket_fd);
              file_again = 0;
-             exit(1);
+             exit(1); //exit
          }
         if(file_again == 'y')
         {
