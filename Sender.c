@@ -120,7 +120,7 @@ int main()
         smts(second_half_message, socket_fd);
 
         //We give the server time to process the data.
-        sleep(10);
+        sleep(2);
 
         //Asking the client whether to continue or not.
         free_will:
@@ -128,6 +128,7 @@ int main()
          scanf(" %c", &file_again);
          if (file_again == 'n') {
              printf(" It's so sad, but we will respect your decision. \n Good luck in the rest of your life\n");
+             printf(" ~ Stav & Avichi  XDXDXD ~ \n");
              //Exit from the program
              int exit_send = send(socket_fd, "N", 1, 0);
              err_mess(exit_send);
@@ -137,6 +138,7 @@ int main()
          }
         if(file_again == 'y')
         {
+            printf("yesss ! we will send again :) \n");
             //need to send the file again
             send(socket_fd, "Y", 1, 0);
         }
