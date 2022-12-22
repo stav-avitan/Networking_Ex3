@@ -17,6 +17,7 @@
 //Function that print the report.
 void printreport(int numofiterations)
 {
+    //reset the values
     long int avgitcubic = 0;
     long int avgitreno = 0;
     long int avgittotal = 0;
