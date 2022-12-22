@@ -12,7 +12,8 @@
 #define SERVER_IP_ADDRESS "127.0.0.1"
 #define FILE_SIZE 2136287
 void err_mess(int exit_send);
-void smts(char *half_file, int socket_fd);
+void send_mess(char *half_file, int socket_fd);
+void send_again_ (int socket_fd, char letter, int one, int zero);
 
 int main()
 {
@@ -83,7 +84,7 @@ int main()
 
         //We send the first part of the file.
         printf("First part :");
-        smts(first_half_message, socket_fd);
+        send_mess(first_half_message, socket_fd);
 
         //Receiving the authentication.
         int result = 0;
@@ -117,7 +118,7 @@ int main()
 
         //Sending the second part of the file.
         printf("Second part :");
-        smts(second_half_message, socket_fd);
+        send_mess(second_half_message, socket_fd);
 
         //We give the server time to process the data.
         sleep(2);
@@ -125,7 +126,7 @@ int main()
         //Asking the client whether to continue or not.
         free_will:
         printf("Send the file again? (y/n): ");
-         scanf(" %c", &file_again);
+        scanf(" %c", &file_again);
          if (file_again == 'n') {
              printf(" It's so sad, but we will respect your decision. \n Good luck in the rest of your life\n");
              printf(" ~ Stav & Avichi  XDXDXD ~ \n");
@@ -136,31 +137,32 @@ int main()
              file_again = 0;
              exit(1); //exit
          }
-        if(file_again == 'y')
+        if(file_again == 'y') //if they choose 'y'- send again
         {
-            printf("yesss ! we will send again :) \n");
-            //need to send the file again
-            send(socket_fd, "Y", 1, 0);
+            send_again_(socket_fd, 'y', 1,0 ) ;
         }
         else if (file_again!= 'y' && file_again!='n')
         {
             //Another char other than y or n
             printf("Char error \n");
-            goto free_will;
+            goto free_will; // loop back and try again
         }
 
     }
 }
-
-
-
 void err_mess (int exit_send){
     if(exit_send == -1){
         printf("exit message has failed to send\n");
     }
 }
+void send_again_  (int socket_fd, char letter, int one, int zero){
+
+            printf("yesss ! we will send again :) \n");
+            //need to send the file again
+            send(socket_fd, "Y", 1, 0);
+}
 //This function send half of the message to the server.
-    void smts(char *half_file, int socket_fd){
+    void send_mess(char *half_file, int socket_fd){
 
     int bytes_sent = send(socket_fd, half_file, FILE_SIZE / 2, 0);
 
