@@ -112,7 +112,7 @@ int main()
     {
         perror("accept didn't work");
         close(listeningsocket);
-        return -1;
+       exit(1);
     }
 
     //The number of iterations
@@ -237,9 +237,12 @@ int main()
             printf("---------------------------------------\n");
             printf("The report is:\n");
             printreport(iterationnumber);
-            printf("Closing client socket\n");
+            printf("Closing client and server socket\n");
             close(client_socket);
-            break;
+            close(listeningsocket);
+            printf("bye friends ! we will miss you until the next time \n");
+            printf(" - Stav & Avichi  XDXDXD - \n");
+            exit(1);
         }
         else
         {

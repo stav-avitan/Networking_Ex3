@@ -11,7 +11,7 @@
 #define SERVER_PORT 6000
 #define SERVER_IP_ADDRESS "127.0.0.1"
 #define FILE_SIZE 2136287
-
+void err_mess(int exit_send);
 void smts(char *half_file, int socket_fd);
 
 int main()
@@ -90,7 +90,7 @@ int main()
         int bytes_received = recv(socket_fd, &result, sizeof(result), 0);
         if (bytes_received == -1)
         {
-            perror("recv() failed");
+            perror("recv() failed\n");
         }
         else if (bytes_received == 0)
         {
@@ -111,7 +111,7 @@ int main()
         //Setting the CC algorithm to reno.
         if (setsockopt(socket_fd, IPPROTO_TCP, TCP_CONGESTION, "reno", 4) == -1)
         {
-            perror("setsockopt() failed");
+            perror("setsockopt() failed\n");
             return -1;
         }
 
@@ -126,52 +126,58 @@ int main()
         free_will:
         printf("Send the file again? (y/n): ");
          scanf(" %c", &file_again);
-         if (file_again == 'n')
+         if (file_again == 'n') {
+             printf(" It's so sad, but we will respect your decision. \n Good luck in the rest of your life\n");
+             //Exit from the program
+             int exit_send = send(socket_fd, "N", 1, 0);
+             err_mess(exit_send);
+             close(socket_fd);
+             file_again = 0;
+             exit(1);
+         }
+        if(file_again == 'y')
         {
-            //Exit from the program
-            int exit_send = send(socket_fd, "N", 1, 0);
-            if(exit_send == -1){
-                printf("exit message has failed to send\n");
-            }
-            close(socket_fd);
-            file_again=0;
-            exit(1);
-
-        }
-        else if(file_again == 'y')
-        {
-            //Continue
+            //need to send the file again
             send(socket_fd, "Y", 1, 0);
         }
-        else
+        else if (file_again!= 'y' && file_again!='n')
         {
-            //Another char other than y or n.
-            printf("Char error\n");
+            //Another char other than y or n
+            printf("Char error \n");
             goto free_will;
         }
+
     }
 }
 
+
+
+void err_mess (int exit_send){
+    if(exit_send == -1){
+        printf("exit message has failed to send\n");
+    }
+}
 //This function send half of the message to the server.
-void smts(char *half_file, int socket_fd)
-{
+    void smts(char *half_file, int socket_fd){
+
     int bytes_sent = send(socket_fd, half_file, FILE_SIZE / 2, 0);
-    if (bytes_sent == -1)
-    {
-        printf("send() failed with error code : %d", errno);
-        close(socket_fd);
-        exit(1);
-    }
-    else if (bytes_sent == 0)
-    {
-        printf("peer has closed the TCP connection prior to send().\n");
-    }
-    else if (bytes_sent < FILE_SIZE / 2)
-    {
-        printf("sent only %d bytes from the required %d.\n", FILE_SIZE / 2, bytes_sent);
-    }
-    else
-    {
-        printf("message was successfully sent.\n");
+
+    switch (bytes_sent) {
+        case -1:
+            printf("Sorry, the sending was failed: %d", errno);
+            close(socket_fd);
+            exit(1);
+            break;
+        case 0:
+            printf("peer has closed the TCP connection prior to send().\n");
+            exit(1);
+            break;
+        default:
+            if (bytes_sent < FILE_SIZE / 2) {
+                printf("sent only %d bytes from the required %d.\n", FILE_SIZE / 2, bytes_sent);
+            } else {
+                printf("message was successfully sent.\n");
+            }
+            break;
     }
 }
